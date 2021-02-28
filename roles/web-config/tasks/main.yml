@@ -24,7 +24,7 @@
 
 - name: Copy the rest of the necessary files.
   copy:
-    src: /home/ubuntu/aws-lamp-frontend-backend/uploads/
+    src: /home/ubuntu/aws-ansible-lamp-rhel/uploads/
     dest: /var/www/html/uploads/
   become: yes
 
@@ -33,8 +33,8 @@
     path: /var/www
     state: directory
     recurse: yes
-    owner: ubuntu
-    group: ubuntu
+    owner: ec2-user
+    group: ec2-user
   become: yes
 
 - name: Change the ownership of 'uploads' folder.
@@ -42,13 +42,13 @@
     path: /var/www/html/uploads
     state: directory
     recurse: yes
-    owner: www-data
-    group: www-data
+    owner: apache
+    group: apache
   become: yes
 
 - name: Restart Apache Service.
   service:
-    name: apache2
+    name: httpd
     state: restarted
   become: yes
   

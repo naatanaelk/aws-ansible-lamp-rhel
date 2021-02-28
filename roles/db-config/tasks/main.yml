@@ -2,7 +2,7 @@
   mysql_db:
     state: import
     name: "{{  db_name  }}"
-    target: /home/ubuntu/aws-lamp-frontend-backend/simple_lamp.sql
+    target: /home/ubuntu/aws-ansible-lamp-rhel/simple_lamp.sql
     login_user: "{{  db_user  }}"
     login_password: "{{ db_user_password }}"
     login_host: "{{ db1_hosts  }}"

@@ -2,7 +2,7 @@
 # tasks file for web
 - name: Install Apache & MySQL Client
   dnf:
-    name: ['httpd', 'httpd-tools', 'mysql-client']
+    name: ['httpd', 'httpd-tools', 'mysql']
     state: present
     update_cache: yes
   become: yes
