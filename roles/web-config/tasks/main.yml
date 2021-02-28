@@ -1,0 +1,54 @@
+- name: Copy the Index file(index.php)
+  template:
+    src: index.php.j2 
+    dest: /var/www/html/index.php
+  become: yes
+
+- name: Remove 'index.html' file
+  file:
+    path: /var/www/html/index.html
+    state: absent
+  become: yes
+
+- name: Copy the Config file(config.php)
+  template:
+    src: config.php.j2 
+    dest: /var/www/html/config.php
+  become: yes
+
+- name: Copy the JS file(demo.js)
+  template:
+    src: demo.js.j2 
+    dest: /var/www/html/demo.js
+  become: yes
+
+- name: Copy the rest of the necessary files.
+  copy:
+    src: /home/ubuntu/aws-lamp-frontend-backend/uploads/
+    dest: /var/www/html/uploads/
+  become: yes
+
+- name: Change the ownership of www folder.
+  file: 
+    path: /var/www
+    state: directory
+    recurse: yes
+    owner: ubuntu
+    group: ubuntu
+  become: yes
+
+- name: Change the ownership of 'uploads' folder.
+  file: 
+    path: /var/www/html/uploads
+    state: directory
+    recurse: yes
+    owner: www-data
+    group: www-data
+  become: yes
+
+- name: Restart Apache Service.
+  service:
+    name: apache2
+    state: restarted
+  become: yes
+  

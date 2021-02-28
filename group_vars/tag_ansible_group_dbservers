@@ -1,0 +1,6 @@
+# Variables for DB servers
+
+mysql_root_password: Password1
+db_name: simple_lamp
+db_user: myuser
+db_user_password: mypass

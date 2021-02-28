@@ -1,0 +1,67 @@
+---
+# tasks file for db
+
+- name: Install MySQL
+  dnf:
+    name: ['mysql-server', 'mysql-client', 'python3-pymysql']
+    state: latest
+    update_cache: yes
+  become: yes
+
+- name: Ensure mysql is running and starts on boot
+  service:
+    name: mysqld
+    state: started
+    enabled: yes
+  become: yes
+
+- name: Ensure mysql root password is updated for all root accounts
+  command: sudo mysql -u root -p{{ mysql_root_db_pass }} -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '{{ mysql_root_password }}'; FLUSH PRIVILEGES;"
+  become: yes
+
+- name: Copy the root credentials as .my.cnf file
+  template: 
+    src: root.cnf.j2 
+    dest: /home/ec2-user/.my.cnf 
+    mode: 0600
+    owner: root
+  become: yes
+
+- name: Removes all anonymous user accounts
+  mysql_user:
+    name: ''      
+    host_all: yes
+    state: absent
+    login_user: root
+    login_password: "{{ mysql_root_db_pass }}"
+  become: yes
+
+- name: Removes the MySQL test database
+  mysql_db:
+   name: test
+   state: absent 
+   login_user: root
+   login_password: "{{ mysql_root_db_pass }}"
+
+- name: Create Application Database
+  mysql_db: 
+    name: "{{ db_name }}"
+    state: present
+    login_user: root
+    login_password: "{{ mysql_root_db_pass }}"
+
+- name: Create Application DB User
+  mysql_user: 
+    name: "{{ db_user }}"
+    password: "{{ db_user_password }}" 
+    login_user: root
+    login_password: "{{ mysql_root_db_pass }}"
+    priv: '*.*:ALL' 
+    host: '%' 
+    state: present
+
+- name: Restart DB to Allow Remote Connection
+  service:
+    name: mysqld
+    state: restarted
+  become: yes

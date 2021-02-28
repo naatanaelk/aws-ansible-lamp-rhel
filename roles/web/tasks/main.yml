@@ -1,0 +1,15 @@
+---
+# tasks file for web
+- name: Install Apache & MySQL Client
+  dnf:
+    name: ['httpd', 'httpd-tools', 'mysql-client']
+    state: present
+    update_cache: yes
+  become: yes
+
+- name: Start Apache
+  service:
+    name: httpd
+    state: started
+    enabled: yes
+  become: yes

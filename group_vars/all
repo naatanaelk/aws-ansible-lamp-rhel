@@ -1,0 +1,15 @@
+# AWS variables
+
+instance_type: "t2.micro"
+region: "us-east-1"
+image_id: "ami-096fda3c22c1c990a"
+key_pair: "jenkins-master"
+security_group: "ssh-http-mysql"
+volume_size: 16
+ec2_access_key: ""
+ec2_secret_key: ""
+
+# Hosts variables
+
+db1_hosts: ""
+web1_hosts: ""

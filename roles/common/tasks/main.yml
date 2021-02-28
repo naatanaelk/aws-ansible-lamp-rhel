@@ -1,0 +1,13 @@
+---
+# tasks file for common
+- name: Update all packages
+  dnf:
+    name: '*'
+    state: latest
+    update_cache: yes
+  become: yes
+- name: Install PHP, PHP mod, & git.
+  dnf:
+    name: ['php', 'php-curl', 'php-xml', 'php-mysqlnd', 'git']
+    state: present
+  become: yes

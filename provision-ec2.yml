@@ -1,0 +1,58 @@
+- name: Create EC2 instances for LAMP stack
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars_files:
+  - group_vars/all
+
+  tasks:
+  - name: Create web servers
+    ec2:
+      keypair: "{{ key_pair }}"
+      aws_access_key: "{{ec2_access_key}}"
+      aws_secret_key: "{{ec2_secret_key}}"
+      group: "{{ security_group }}"
+      type: "{{ instance_type }}"
+      image: "{{ image_id }}"
+      region: "{{ region }}"
+      instance_tags: "{'ansible_group':'webservers', 'type':'{{ instance_type }}', 'group':'{{ security_group }}', 'Name':'web'}"
+      count: 1
+      volumes:
+      - device_name: /dev/sda1
+        device_type: gp2
+        volume_size: "{{ volume_size }}"
+        delete_on_termination: true
+      wait: true
+    register: ec2_web
+
+  - name: Create DB server
+    ec2:
+      keypair: "{{ key_pair }}"
+      aws_access_key: "{{ec2_access_key}}"
+      aws_secret_key: "{{ec2_secret_key}}"
+      group: "{{ security_group }}"
+      type: "{{ instance_type }}"
+      image: "{{ image_id }}"
+      region: "{{ region }}"
+      instance_tags: "{'ansible_group':'dbservers', 'type':'{{ instance_type }}', 'group':'{{ security_group }}', 'Name':'db'}"
+      count: 1
+      volumes:
+      - device_name: /dev/sda1
+        device_type: gp2
+        volume_size: "{{ volume_size }}"
+        delete_on_termination: true
+      wait: true
+    register: ec2_db
+
+  - name: Add web instances to inventory.
+    add_host:
+      name: '{{ item.public_ip }}'
+      groups: web
+    loop: "{{ ec2_web.instances }}"
+
+  - name: Add db_instances to inventory.
+    add_host:
+      name: '{{ item.public_ip }}'
+      groups: db
+    loop: "{{ ec2_db.instances }}"

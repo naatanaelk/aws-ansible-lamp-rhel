@@ -1,0 +1,13 @@
+- hosts: web
+  vars_files:
+  - group_vars/all
+  - group_vars/tag_ansible_group_dbservers
+  roles:
+  - web-config
+
+- hosts: localhost
+  vars_files:
+  - group_vars/all
+  - group_vars/tag_ansible_group_dbservers
+  roles:
+  - db-config
