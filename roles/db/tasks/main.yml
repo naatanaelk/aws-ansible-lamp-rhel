@@ -15,9 +15,16 @@
     enabled: yes
   become: yes
 
-- name: Ensure mysql root password is updated for all root accounts
-  command: sudo mysql -u root -p{{ mysql_root_db_pass }} -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '{{ mysql_root_password }}'; FLUSH PRIVILEGES;"
-  become: yes
+#- name: Ensure mysql root password is updated for all root accounts
+#  command: sudo mysql -u root -p{{ mysql_root_db_pass }} -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '{{ mysql_root_password }}'; FLUSH PRIVILEGES;"
+#  become: yes
+
+- name: Set the root password 
+  mysql_user: 
+    login_user: root 
+    login_password: "{{ mysql_root_db_pass }}" 
+    user: root 
+    password: "{{ mysql_root_db_pass }}"
 
 - name: Copy the root credentials as .my.cnf file
   template: 
@@ -26,6 +33,30 @@
     mode: 0600
     owner: root
   become: yes
+
+- name: Secure the root user for IPV6 localhost (::1)
+  mysql_user: 
+    login_user: root 
+    login_password: "{{ mysql_root_db_pass }}" 
+    user: root 
+    password: "{{ mysql_root_db_pass }}" 
+    host: "::1"
+
+- name: Secure the root user for IPV4 localhost (127.0.0.1)
+  mysql_user: 
+    login_user: root 
+    login_password: "{{ mysql_root_db_pass }}" 
+    user: root 
+    password: "{{ mysql_root_db_pass }}" 
+    host: "127.0.0.1"
+
+- name: Secure the root user for localhost domain
+  mysql_user: 
+    login_user: root 
+    login_password: "{{ mysql_root_db_pass }}" 
+    user: root 
+    password: "{{ mysql_root_db_pass }}" 
+    host: "localhost"
 
 - name: Removes all anonymous user accounts
   mysql_user:
