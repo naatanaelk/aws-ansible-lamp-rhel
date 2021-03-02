@@ -24,7 +24,6 @@
         volume_size: "{{ volume_size }}"
         delete_on_termination: true
       wait: true
-    register: ec2_web
 
   - name: Create DB server
     ec2:
@@ -43,16 +42,3 @@
         volume_size: "{{ volume_size }}"
         delete_on_termination: true
       wait: true
-    register: ec2_db
-
-  - name: Add web instances to inventory.
-    add_host:
-      name: '{{ item.public_ip }}'
-      groups: web
-    loop: "{{ ec2_web.instances }}"
-
-  - name: Add db_instances to inventory.
-    add_host:
-      name: '{{ item.public_ip }}'
-      groups: db
-    loop: "{{ ec2_db.instances }}"

@@ -1,13 +1,13 @@
+- name: Create website directory
+  file:
+    path: /var/www/html/welcome
+    state: directory
+  become: yes
+
 - name: Copy the Index file(index.php)
   template:
     src: index.php.j2 
     dest: /var/www/html/index.php
-  become: yes
-
-- name: Remove 'index.html' file
-  file:
-    path: /var/www/html/index.html
-    state: absent
   become: yes
 
 - name: Copy the Config file(config.php)
@@ -46,9 +46,15 @@
     group: apache
   become: yes
 
+- name: Set httpd_can_network_connect_db flag on and keep it persistent across reboots
+  seboolean:
+    name: httpd_can_network_connect_db
+    state: yes
+    persistent: yes
+  become: yes
+
 - name: Restart Apache Service.
   service:
     name: httpd
     state: restarted
   become: yes
-  

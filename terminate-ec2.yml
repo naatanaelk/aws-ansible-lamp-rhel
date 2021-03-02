@@ -6,36 +6,22 @@
   - group_vars/all
 
   tasks:
-  - name: Gather Web Instance EC2 Facts.
-    ec2_instance_info:
-      region: "{{ region }}"
-      filters:
-        "tag:Name": "web"
-      aws_access_key: "{{ec2_access_key}}"
-      aws_secret_key: "{{ec2_secret_key}}"
-    register: ec2_web
-
-  - name: Gather DB Instance EC2 Facts.
-    ec2_instance_info:
-      region: "{{ region }}"
-      filters:
-        "tag:Name": "db"
-      aws_access_key: "{{ec2_access_key}}"
-      aws_secret_key: "{{ec2_secret_key}}"
-    register: ec2_db
-
-  - name: Kill EC2 Instance
+  - name: Kill EC2 Web Instance
     ec2:
-      instance_ids: "{{ ec2_web.instances[0].instance_id }}"
-      state: absent
       region: "{{ region }}"
       aws_access_key: "{{ec2_access_key}}"
       aws_secret_key: "{{ec2_secret_key}}"
+      count_tag:
+        ansible_group: webservers
+      exact_count: 0
+      image: "{{ image_id }}"
 
-  - name: Kill EC2 Instance
+  - name: Kill EC2 DB Instance
     ec2:
-      instance_ids: "{{ ec2_db.instances[0].instance_id }}"
-      state: absent
       region: "{{ region }}"
       aws_access_key: "{{ec2_access_key}}"
       aws_secret_key: "{{ec2_secret_key}}"
+      count_tag:
+        ansible_group: dbservers
+      exact_count: 0
+      image: "{{ image_id }}"

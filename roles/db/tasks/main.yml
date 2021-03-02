@@ -3,7 +3,7 @@
 
 - name: Install MySQL
   dnf:
-    name: ['mysql-server', 'mysql-client', 'python3-pymysql']
+    name: ['mysql-server', 'mysql', 'python3-PyMySQL']
     state: latest
     update_cache: yes
   become: yes
@@ -20,11 +20,15 @@
 #  become: yes
 
 - name: Set the root password 
-  mysql_user: 
-    login_user: root 
-    login_password: "{{ mysql_root_db_pass }}" 
+  mysql_user:
+    login_host: 'localhost' 
+    login_user: 'root' 
+    login_password: '' 
     user: root 
     password: "{{ mysql_root_db_pass }}"
+    state: present
+  ignore_errors: yes
+  register: result
 
 - name: Copy the root credentials as .my.cnf file
   template: 
@@ -33,30 +37,34 @@
     mode: 0600
     owner: root
   become: yes
+  when: result is succeeded
 
-- name: Secure the root user for IPV6 localhost (::1)
-  mysql_user: 
-    login_user: root 
-    login_password: "{{ mysql_root_db_pass }}" 
-    user: root 
-    password: "{{ mysql_root_db_pass }}" 
-    host: "::1"
+#- name: Secure the root user for IPV6 localhost (::1)
+#  mysql_user: 
+#    login_user: root 
+#    login_password: "{{ mysql_root_db_pass }}" 
+#    user: root 
+#    password: "{{ mysql_root_db_pass }}" 
+#    host: "::1"
+#  when: result is succeeded
 
-- name: Secure the root user for IPV4 localhost (127.0.0.1)
-  mysql_user: 
-    login_user: root 
-    login_password: "{{ mysql_root_db_pass }}" 
-    user: root 
-    password: "{{ mysql_root_db_pass }}" 
-    host: "127.0.0.1"
+#- name: Secure the root user for IPV4 localhost (127.0.0.1)
+#  mysql_user: 
+#    login_user: root 
+#    login_password: "{{ mysql_root_db_pass }}" 
+#    user: root 
+#    password: "{{ mysql_root_db_pass }}" 
+#    host: "127.0.0.1"
+#  when: result is succeeded
 
-- name: Secure the root user for localhost domain
-  mysql_user: 
-    login_user: root 
-    login_password: "{{ mysql_root_db_pass }}" 
-    user: root 
-    password: "{{ mysql_root_db_pass }}" 
-    host: "localhost"
+#- name: Secure the root user for localhost domain
+#  mysql_user: 
+#    login_user: root 
+#    login_password: "{{ mysql_root_db_pass }}" 
+#    user: root 
+#    password: "{{ mysql_root_db_pass }}" 
+#    host: "localhost"
+#  when: result is succeeded
 
 - name: Removes all anonymous user accounts
   mysql_user:
@@ -66,6 +74,7 @@
     login_user: root
     login_password: "{{ mysql_root_db_pass }}"
   become: yes
+  when: result is succeeded
 
 - name: Removes the MySQL test database
   mysql_db:
@@ -73,6 +82,7 @@
    state: absent 
    login_user: root
    login_password: "{{ mysql_root_db_pass }}"
+  when: result is succeeded
 
 - name: Create Application Database
   mysql_db: 
