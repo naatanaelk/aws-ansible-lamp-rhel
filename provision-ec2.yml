@@ -24,6 +24,8 @@
         volume_size: "{{ volume_size }}"
         delete_on_termination: true
       wait: true
+      vpc_subnet_id: subnet-35a30604
+      private_ip: "{{ web1_hosts }}"
 
   - name: Create DB server
     ec2:
@@ -42,3 +44,5 @@
         volume_size: "{{ volume_size }}"
         delete_on_termination: true
       wait: true
+      vpc_subnet_id: subnet-35a30604
+      private_ip: "{{ db1_hosts }}"

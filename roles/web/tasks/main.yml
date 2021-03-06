@@ -13,3 +13,8 @@
     state: started
     enabled: yes
   become: yes
+
+- name: Change webserver hostname
+  hostname:
+    name: "web1"
+  become: yes

@@ -106,3 +106,8 @@
     name: mysqld
     state: restarted
   become: yes
+
+- name: Change dbserver hostname
+  hostname:
+    name: "db1"
+  become: yes
